@@ -1,6 +1,14 @@
 # 476_573Recommender
 A project for BIL476/573 Course.
 
+Made by 
+
+Ayça Gürleyik 151101032
+
+Kasım Alp Toker 131101058
+
+Orhan Onar 131101063
+
 After downloading our files,
 
 You have to download XAMPP for local site. Here a download link : https://www.apachefriends.org/tr/download.html
