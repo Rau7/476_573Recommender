@@ -139,6 +139,73 @@ class Profile extends CI_Controller {
 		      header("Location: ".base_url());
 		    }
 		}
+
+		
+	public function add_futuretoread_book(){
+		if(isset($this->session->userdata['admin']['admin_id'])){
+		
+		$this->load->model("Book_model");
+		$data['subview'] = "profile";
+		$data["title"]= "Kitap Ekle";
+
+		$books=$this->input->post();
+		$cnt=0;
+		foreach ($books as $key => $value) {
+			if($key!='Ekle'){
+				$data['books'][$cnt]=$key;
+				$cnt++;
+			}
+		}
+
+		$data['future']=$this->Book_model->get_future_books($this->session->userdata['admin']['admin_name'])[0]['admin_future_id'];
+
+		$data['read']=$this->Book_model->get_read_books($this->session->userdata['admin']['admin_name'])[0]['admin_read_id'];
+
+		$data['readedbooks']=explode(',',$data['read']);
+	    $data['futurebooks']=explode(',',$data['future']);
+
+	    foreach ($data['books'] as $key => $value) {
+	    	array_push($data['readedbooks'], $value);
+	    }
+
+	    $data['new_readed']="";
+	    for ($i=0; $i <count($data['readedbooks']) ; $i++) { 
+	    	if($i==0){
+	    	$data['new_readed']=$data['readedbooks'][0];
+	    	}
+	    	elseif($i!=0 && $i!=count($data['readedbooks'])-1){
+	    	$data['new_readed']=$data['new_readed'].','.$data['readedbooks'][$i];
+	    	}
+	    }
+
+
+	    foreach ($data['books'] as $key => $value) {
+	    	foreach ($data['futurebooks'] as $key1 => $value1) {
+	    		if($value==$value1){
+	    			unset($data['futurebooks'],$key1);
+	    			
+	    	}
+	    		}
+	    }
+	    $data['new_future']="";
+	    for ($i=0; $i <count($data['futurebooks']) ; $i++) { 
+	    	if($i==0){
+	    	$data['new_future']=$data['futurebooks'][0];
+	    	}
+	    	elseif($i!=0 && $i!=count($data['futurebooks'])-1){
+	    	$data['new_future']=$data['new_future'].','.$data['futurebooks'][$i];
+	    	}
+	    }
+
+		$this->Book_model->update_recs($data['new_future'],$this->session->userdata['admin']['admin_id']);
+		$this->Book_model->update_recs_read($data['new_readed'],$this->session->userdata['admin']['admin_id']);
+		
+		$this->load->view('layouts/standart',$data);
+		}
+    else{
+      header("Location: ".base_url());
+    }
+	}
 	
 }
 
