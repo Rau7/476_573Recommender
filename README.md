@@ -25,7 +25,7 @@ Log out: User can easily log out from website and can sign in with an other acco
 #### Software Requirement:
 
 -Windows 7 or higher <br/>
--Visual studio 2010.<br/>
+-XAMPP.<br/>
 -SQL Server 2008.<br/>
 
 
