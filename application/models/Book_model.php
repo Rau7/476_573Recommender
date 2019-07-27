@@ -55,5 +55,15 @@
             return $this->db->query("UPDATE admin SET admin_read_id='".$data."' WHERE admin_id='".$admin_id."'");
         }
 
+        function get_book_author_name($book_name){
+            return $this->db->query("SELECT book_author FROM books WHERE book_name=".$this->db->escape($book_name)."")->row(0,"array");
+        }
+        function get_book_genre_name($book_name){
+            return $this->db->query("SELECT book_genre FROM books WHERE book_name=".$this->db->escape($book_name)."")->row(0,"array");
+        }
+        function get_book_id_name2($book_name){
+            return $this->db->query("SELECT book_id FROM books WHERE book_name=".$this->db->escape($book_name)."")->row(0,"array");
+        }
+
     }
 ?>
