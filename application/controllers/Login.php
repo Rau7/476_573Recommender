@@ -9,7 +9,7 @@ class Login extends CI_Controller {
       redirect('http://localhost/bookstore/index.php/Profile','refresh');
     }
     else{
-      $data['title'] = "BooksThatYouLove Admin - Giriş";
+      $data['title'] = "BooksThatYouLove - Giriş";
 
  
       if($this->input->post()){
@@ -20,11 +20,11 @@ class Login extends CI_Controller {
 
         if(empty($admin)){
           $this->session->set_flashdata('error', 'Hatalı kullanıcı adı veya şifre girdiniz.');
-          header("Location: ".base_url());
+          redirect('http://localhost/bookstore/index.php/Login','refresh');
         }
         else{
           $this->session->set_userdata('admin',$admin);
-          header("Location: ".base_url());
+          redirect('http://localhost/bookstore/index.php/Profile','refresh');
         }
       }
       else{
@@ -35,6 +35,51 @@ class Login extends CI_Controller {
 
   public function out(){
     $this->session->sess_destroy();
-    header("Location: ".base_url());
+    redirect('http://localhost/bookstore/index.php/Login','refresh');
   }
+ 
+  public function signup_enter(){
+  $data['title'] = "Sign Up";
+
+  $this->load->model("Login_model");
+
+  $this->load->view('layouts/signup',$data);
+
+  }
+
+  public function real_sign(){
+   $this->load->model("Login_model");
+
+   $admins=$this->Login_model->getAdmins();
+
+   if($this->input->post()){
+
+    $know=$this->input->post();
+
+    $counter=0;
+
+    foreach ($admins as $ad) {
+      if($ad['admin_name']==$know['user']){
+        $counter++;
+      }
+    }
+
+    if($counter!=0){
+      redirect('http://localhost/bookstore/index.php/Login/signup_enter','refresh');
+    }
+    else{
+      $this->Login_model->addAdmin($know);
+      redirect('http://localhost/bookstore/index.php/Login','refresh');
+    }
+  
+
+
+   }
+   else{
+    redirect('http://localhost/bookstore/index.php/Login/signup_enter','refresh');
+   }
+
+
+  }
+
 }
