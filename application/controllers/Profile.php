@@ -205,6 +205,158 @@ class Profile extends CI_Controller {
 
 		}
 
+			public function converted($admin_name){
+		$this->load->model("Book_model");
+
+		$data['admins']=$this->Book_model->get_admins();
+		$counterr=0;
+		foreach ($data['admins'] as $key => $value) {
+		$data['read']=$this->Book_model->get_read_books($value['admin_name']);
+	    $data['future']=$this->Book_model->get_future_books($value['admin_name']);
+	    $data['rating']=$this->Book_model->get_rating_books($value['admin_name']);
+	    $data['admins'][$key]['readedbooks']=explode(',',$data['read'][0]['admin_read_id']);
+	    $data['admins'][$key]['futurebooks']=explode(',',$data['future'][0]['admin_future_id']);
+	    $data['admins'][$key]['rating']=explode(',',$data['rating'][0]['admin_rating']);
+	    $counterr++;
+		}
+
+
+		foreach ($data['admins'] as $key => $value) {
+
+			foreach ($data['admins'][$key]['readedbooks'] as $key1 => $value1) {
+				
+				$name=$this->Book_model->get_book_name($value1);
+
+
+				$recc[$value['admin_name']][$name['book_name']]=$data['admins'][$key]['rating'][$key1];
+			}
+			
+		}
+
+		$sa=$this->getRecommendations($recc,$admin_name);
+		
+		$sevenup=array();
+		$sevendown=array();
+		$crt=0;
+		foreach ($sa as $key => $value) {
+			if($value>7 && $crt<6 ){
+			$ele['name']=$key;
+			$ele['simscore']=$value;
+			$ele['author']=$this->Book_model->get_book_author_name($key);
+			$ele['genre']=$this->Book_model->get_book_genre_name($key);
+			$ele['id']=$this->Book_model->get_book_id_name2($key);
+			array_push($sevenup, $ele);
+			$crt++;
+			}
+			else if($crt!=5){
+			$ele['name']=$key;
+			$ele['simscore']=$value;
+			$ele['author']=$this->Book_model->get_book_author_name($key);
+			$ele['genre']=$this->Book_model->get_book_genre_name($key);
+			$ele['id']=$this->Book_model->get_book_id_name2($key);
+		    array_push($sevendown, $ele);
+			}
+
+		}
+
+		$admin_read=array();
+
+		foreach ($recc[$admin_name] as $key => $value) {
+			
+			$ele['name']=$key;
+			$ele['simscore']=$value;
+			$ele['author']=$this->Book_model->get_book_author_name($key);
+			$ele['genre']=$this->Book_model->get_book_genre_name($key);
+			$ele['id']=$this->Book_model->get_book_id_name2($key);
+			array_push($admin_read, $ele);
+			
+		}
+		$realito=$this->extendedCol($sevendown,$admin_read,$crt);
+
+		$last=array_merge($sevenup,$realito);
+
+		$sizeofus=count($last);
+
+		if(count($last)<5){
+
+			for ($i=$sizeofus; $i < 5; $i++) { 
+				
+				array_push($last,$sevendown[$i]);
+
+			}
+
+		}
+	
+		return $last; 
+	}
+
+	public function extendedCol($data,$admin_read,$crt){
+
+		$real_rec=array();
+
+		$author_arr=array();
+
+		$genre_arr=array();
+
+		foreach ($admin_read as $key => $value) {
+			array_push($author_arr,(string)$value['author']['book_author']);
+		}
+
+		$result=array_count_values($author_arr);
+
+
+		foreach ($data as $key => $value) {
+			
+			foreach ($result as $key1 => $value1) {
+				
+				if($value['author']['book_author']==$key1){
+
+					if($crt<5){
+						array_push($real_rec,$value);
+
+						$crt++;
+					}
+						
+				}
+
+			}
+		}
+
+		if($crt<5){
+
+		foreach ($admin_read as $key => $value) {
+			array_push($genre_arr,(string)$value['genre']['book_genre']);
+		}
+
+		$result2=array_count_values($genre_arr);
+
+
+		foreach ($data as $key => $value) {
+			
+			foreach ($result2 as $key1 => $value1) {
+				
+				if($value['genre']['book_genre']==$key1){
+
+					if($crt<5){
+						array_push($real_rec,$value);
+
+						$crt++;
+					}
+
+						
+				}
+
+
+			}
+
+		}
+
+		}
+
+		return $real_rec;
+
+	}
+
 	
 }
 
