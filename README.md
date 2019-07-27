@@ -6,7 +6,7 @@ Book Recommendation system with extended callaborative Filtering
 
 #### 1. User Modules:
 
-Registration / Login: User or customer should register with basic details to make an account for buying the books online. Registered User can login into the system with valid username and password.<br/>
+Registration / Login: User or customer should register with basic details to make an account for recommended and read the books online. Registered User can login into the system with valid username and password.<br/>
 View All Books: After Successful Login user can see all the  books . The book gallery author,rating and name . 
 Recommendations: When User come to website again the system will show the recommendation of books using extended collaborative filtering. <br/>
 ReadBooks: All  read books are listed for user.<br/>
