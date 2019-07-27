@@ -6,11 +6,11 @@ Book Recommendation system with extended callaborative Filtering
 
 #### 1. User Modules:
 
-Registration / Login: User or customer should register with basic details to make an account for buying the books online. Registered User can login into the system with valid username and password.
-View All Books: After Successful Login user can see all the available books to buy online. The book gallery contains front image of book, price, name etc. Clicking on particular book name it will show brief overview about that book.
-Recommendations: When User come to website again the system will show the recommendation of books using extended collaborative filtering. 
-ReadBooks: All  read books are listed for user.
-Log out: User can easily log out from website and can sign in with an other account after clicking log out button.
+Registration / Login: User or customer should register with basic details to make an account for buying the books online. Registered User can login into the system with valid username and password.<br/>
+View All Books: After Successful Login user can see all the  books . The book gallery author,rating and name . 
+Recommendations: When User come to website again the system will show the recommendation of books using extended collaborative filtering. <br/>
+ReadBooks: All  read books are listed for user.<br/>
+Log out: User can easily log out from website and can sign in with an other account after clicking log out button.<br/>
 
 
 #### Hardware Requirement:
