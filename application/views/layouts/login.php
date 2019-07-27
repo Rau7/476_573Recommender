@@ -163,10 +163,20 @@ body{
     </div>
     <br>
     <div class="login">
+    <?php if($this->session->flashdata('error') != ""){ ?>
+      <div class="alert alert-danger">
+        <button class="close" data-close="alert"></button>
+        <span>
+        <?php echo $this->session->flashdata('error'); ?> </span>
+      </div>
+    <?php } ?>
       <form class="login-form" action="http://localhost/bookstore/index.php/login" method="post">
         <input type="text" placeholder="username" name="user"><br>
         <input type="password" placeholder="password" name="password"><br>
         <input type="Submit" value="Login" style="margin-top: 5px;">
+      </form>
+      <form class="login-form" action="http://localhost/bookstore/index.php/login/signup_enter/" method="post" ">
+          <input type="submit" value="Sign Up"/>
       </form>
     </div>
 
