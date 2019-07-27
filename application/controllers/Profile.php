@@ -10,9 +10,9 @@ class Profile extends CI_Controller {
 	    
 	    $this->load->model("Book_model");
 	    $data['read']=$this->Book_model->get_read_books($this->session->userdata['admin']['admin_name']);
-	    $data['future']=$this->Book_model->get_future_books($this->session->userdata['admin']['admin_name']);
+	    $data['rating']=$this->Book_model->get_rating_books($this->session->userdata['admin']['admin_name']);
 	    $data['readedbooks']=explode(',',$data['read'][0]['admin_read_id']);
-	    $data['futurebooks']=explode(',',$data['future'][0]['admin_future_id']);
+	    $data['rating']=explode(',',$data['rating'][0]['admin_rating']);
 
 	    $cnt1=0;
 	    foreach ($data['readedbooks'] as $key => $value) {
@@ -20,11 +20,8 @@ class Profile extends CI_Controller {
 	    $cnt1++;
 	    }
 
-	    $cnt2=0;
-	    foreach ($data['futurebooks'] as $key => $value) {
-	    $data['real_future'][$cnt2]=$this->Book_model->get_book_id($value);
-	    $cnt2++;
-	    }
+		$data['reccs']=	$this->converted($this->session->userdata['admin']['admin_name']);
+
 
 
 		$data['userInfo']=$this->session->userdata['admin'];
@@ -34,7 +31,7 @@ class Profile extends CI_Controller {
 		$this->load->view('layouts/standart',$data);
 		 }
     else{
-      header("Location: ".base_url());
+      redirect('http://localhost/bookstore/index.php/Login','refresh');
     }
 	}
 	
@@ -51,7 +48,7 @@ class Profile extends CI_Controller {
 		    }
 		}
 
-		public function book_adder(){
+	public function book_adder(){
 		if(isset($this->session->userdata['admin']['admin_id'])){
 
 		$post_data['name'] =$this->input->post()['Ad'];
@@ -74,41 +71,10 @@ class Profile extends CI_Controller {
 		redirect('http://localhost/bookstore/index.php/Profile','refresh');
 		}
 		    else{
-			header("Location: ".base_url());
+			redirect('http://localhost/bookstore/index.php/Login','refresh');
 		    }
 		}
 	
-
-	
-	 public function recommendation($book_id){
-		if(isset($this->session->userdata['admin']['admin_id'])){
-
-
-
-		$data['subview'] = "reccom";
-		$data["title"]= "Öneriler";
-
-		$this->load->model("Book_model");
-		$data['poster']['read']=$this->session->userdata['admin']['admin_name'];
-		$data['poster']['id']=$book_id;
-		$data['poster']['bname']=$this->Book_model->get_book_name($book_id)['book_name'];
-		$data['poster']['bauthor']=$this->Book_model->get_book_author($book_id)['book_author'];
-		$data['poster']['byear']=$this->Book_model->get_book_year($book_id)['book_year'];
-		$data['poster']['bcategory']=$this->Book_model->get_book_category($book_id)['book_genre'];
-
-
-
-
-		   $data['reccs']=$this->Book_model->get_recs($data['poster']);
-
-
-		$this->load->view('layouts/standart',$data);
-
-		}
-		    else{
-		      header("Location: ".base_url());
-		    }
-		}
 
 		public function add_reading_book(){
 		if(isset($this->session->userdata['admin']['admin_id'])){
@@ -140,72 +106,105 @@ class Profile extends CI_Controller {
 		    }
 		}
 
-		
-	public function add_futuretoread_book(){
+			public function book_order(){
 		if(isset($this->session->userdata['admin']['admin_id'])){
-		
+
+
+		$data['sel']=$this->input->post()['Submit'];	
+
+		$data['userInfo']=$this->session->userdata['admin'];
+		$data['subview'] = "allthings";
+		$data["title"]= "Tüm Kitaplar";
+
 		$this->load->model("Book_model");
-		$data['subview'] = "profile";
-		$data["title"]= "Kitap Ekle";
 
-		$books=$this->input->post();
-		$cnt=0;
-		foreach ($books as $key => $value) {
-			if($key!='Ekle'){
-				$data['books'][$cnt]=$key;
-				$cnt++;
-			}
+		if($data['sel']=="Tüm Kategoriler"){
+			$data['reccs']=$this->Book_model->get_all_books();
+		}
+		else{
+			$data['reccs']=$this->Book_model->get_all_books_with_cat($data['sel']);
 		}
 
-		$data['future']=$this->Book_model->get_future_books($this->session->userdata['admin']['admin_name'])[0]['admin_future_id'];
+		$data['categories'] = $this->Book_model->get_categories();
 
-		$data['read']=$this->Book_model->get_read_books($this->session->userdata['admin']['admin_name'])[0]['admin_read_id'];
-
-		$data['readedbooks']=explode(',',$data['read']);
-	    $data['futurebooks']=explode(',',$data['future']);
-
-	    foreach ($data['books'] as $key => $value) {
-	    	array_push($data['readedbooks'], $value);
-	    }
-
-	    $data['new_readed']="";
-	    for ($i=0; $i <count($data['readedbooks']) ; $i++) { 
-	    	if($i==0){
-	    	$data['new_readed']=$data['readedbooks'][0];
-	    	}
-	    	elseif($i!=0 && $i!=count($data['readedbooks'])-1){
-	    	$data['new_readed']=$data['new_readed'].','.$data['readedbooks'][$i];
-	    	}
-	    }
-
-
-	    foreach ($data['books'] as $key => $value) {
-	    	foreach ($data['futurebooks'] as $key1 => $value1) {
-	    		if($value==$value1){
-	    			unset($data['futurebooks'],$key1);
-	    			
-	    	}
-	    		}
-	    }
-	    $data['new_future']="";
-	    for ($i=0; $i <count($data['futurebooks']) ; $i++) { 
-	    	if($i==0){
-	    	$data['new_future']=$data['futurebooks'][0];
-	    	}
-	    	elseif($i!=0 && $i!=count($data['futurebooks'])-1){
-	    	$data['new_future']=$data['new_future'].','.$data['futurebooks'][$i];
-	    	}
-	    }
-
-		$this->Book_model->update_recs($data['new_future'],$this->session->userdata['admin']['admin_id']);
-		$this->Book_model->update_recs_read($data['new_readed'],$this->session->userdata['admin']['admin_id']);
-		
 		$this->load->view('layouts/standart',$data);
+
+		
 		}
-    else{
-      header("Location: ".base_url());
-    }
-	}
+		    else{
+			redirect('http://localhost/bookstore/index.php/Login','refresh');
+		    }
+		}
+
+	public function book_all(){
+
+		if(isset($this->session->userdata['admin']['admin_id'])){
+
+		$this->load->model("Book_model");
+		$data['userInfo']=$this->session->userdata['admin'];
+		$data['subview'] = "allthings";
+		$data["title"]= "Tüm Kitaplar";
+
+		$data['categories'] = $this->Book_model->get_categories();
+		$data['reccs']=$this->Book_model->get_all_books();
+
+		$this->load->view('layouts/standart',$data);
+
+
+		}
+		    else{
+			redirect('http://localhost/bookstore/index.php/Login','refresh');
+		    }
+		}
+
+		public function give_rating(){
+
+		$this->load->model("Book_model");
+		
+		$data['reccs']=$this->Book_model->get_all_books();
+
+		$data['readed'] = array_fill(0, 32, "");
+		for ($k=0; $k < 32 ; $k++) { 
+			$data['readed'][$k]= array (
+		    "read_id"  => "",
+		    "rating" => ""
+			);
+		}
+
+		for ($i=0; $i < 32 ; $i++) { 
+
+			for ($j=0; $j < 16 ; $j++) { 
+				
+				$data['readed'][$i]['read_id']=$data['reccs'][rand(0,15253)]['book_id'].",".$data['readed'][$i]['read_id'];
+				$data['readed'][$i]['rating']=rand(2,10).",".$data['readed'][$i]['rating'];
+
+			}
+
+		}
+
+		foreach ($data['readed'] as $key => $value) {
+			$v=substr($value['read_id'],0,-1);
+			$va=substr($value['rating'],0,-1);
+			$data['readed'][$key]['read_id']=$v;
+			$data['readed'][$key]['rating']=$va;
+			
+		}
+		
+		for ($i=0; $i < 32 ; $i++) { 
+		
+		$data['user'][$i]['admin_name']="admin".$i;
+		$data['user'][$i]['admin_password']="123";
+		$data['user'][$i]['admin_status']=1;
+		$data['user'][$i]['admin_read_id']=$data['readed'][$i]['read_id'];
+		$data['user'][$i]['admin_future_id']="";
+		$data['user'][$i]['admin_rating']=$data['readed'][$i]['rating'];
+
+		}
+		
+		$this->Book_model->give_rating_books($data['user']);
+
+		}
+
 	
 }
 
